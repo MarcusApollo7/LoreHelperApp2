@@ -1,9 +1,10 @@
 using MathNet.Numerics.Distributions;
 
-namespace LoreHelperAppBlazor.LoreHelper;
+namespace LoreHelperAppBlazor.Helpers;
 public class Culture
 {
     public ITable Tables;
+    public string CultureName;
     public string[] MaleNames;
     public string[] FemaleNames;
     public string[] NeuterNames;
@@ -13,9 +14,10 @@ public class Culture
     public bool Transition;
     public bool RegnalNames;
 
-    public Culture(ITable tables, string[] malenames, string[] femalenames, int maxpartners, int ageofmajority, bool homosexuality, bool transition, bool regnalname)
+    public Culture(ITable tables, string culturename, string[] malenames, string[] femalenames, int maxpartners, int ageofmajority, bool homosexuality, bool transition, bool regnalname)
     {
         Tables = tables;
+        CultureName = culturename;
         MaleNames = malenames;
         FemaleNames = femalenames;
         NeuterNames = [.. MaleNames, .. FemaleNames];
@@ -25,9 +27,10 @@ public class Culture
         Transition = transition;
         RegnalNames = regnalname;
     }
-    public Culture(ITable tables, string[] malenames, string[] femalenames, string[] neuternames, int maxpartners, int ageofmajority, bool homosexuality, bool transition, bool regnalname)
+    public Culture(ITable tables, string culturename, string[] malenames, string[] femalenames, string[] neuternames, int maxpartners, int ageofmajority, bool homosexuality, bool transition, bool regnalname)
     {
         Tables = tables;
+        CultureName = culturename;
         MaleNames = malenames;
         FemaleNames = femalenames;
         NeuterNames = neuternames;
@@ -37,11 +40,12 @@ public class Culture
         Transition = transition;
         RegnalNames = regnalname;
     }
-    public Culture(string[] malenames, string[] femalenames)
+    public Culture()
     {
         Tables = new DefaultTable();
-        MaleNames = malenames;
-        FemaleNames = femalenames;
+        CultureName = "Culture";
+        MaleNames = ["TestM1", "TestM2"];
+        FemaleNames = ["TestF1", "TestM2"];
         NeuterNames = [.. MaleNames, .. FemaleNames];
         AgeOfMajority = 16;
         Homosexuality = true;
@@ -64,7 +68,7 @@ public class Culture
             return NeuterNames;
         }
     }
-    public Person NewRandomPerson(int birthyear)
+    public PersonItem NewRandomPerson(int birthyear)
     {
         Categorical SexPicker = new(Tables.SexPicker);
         Bernoulli Trans = new(Tables.TransRate);
@@ -101,7 +105,7 @@ public class Culture
         string givenName = possiblenames[random.Next(possiblenames.Length)];
         return new(givenName, birthyear, sex, gender, this, trans, nb);
     }
-    public Person FindPartner(Person Partner1, int current_year, int current_age)
+    public PersonItem FindPartner(PersonItem Partner1, int current_year, int current_age)
     // Computes a person Partner1 would enter a realtionship with regardless of social norms
     {
         int gender;
@@ -146,12 +150,17 @@ public class Culture
         {
             sex = gender;
         }
-
         Random random = new();
-        int birthyear = Partner1.BirthYear;
+        Partner1.BirthYear ??= 0;
+        int birthyear = (int) Partner1.BirthYear;
         string[] possiblenames = GetNames(gender);
         string givenName = possiblenames[random.Next(possiblenames.Length)];
         return new(givenName, birthyear, sex, gender, this, trans, nb); 
-        // Person generated will be same age as Partener1
+        // Person generated will always be same age as Partener1
+    }
+    public override string ToString()
+    {
+        return CultureName;
     }
 }
+

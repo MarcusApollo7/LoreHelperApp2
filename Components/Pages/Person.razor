@@ -1,0 +1,122 @@
+@page "/Person"
+@using LoreHelperAppBlazor.Helpers
+@using System.ComponentModel.DataAnnotations
+@rendermode InteractiveServer
+
+<EditForm Model="@newPerson" FormName="person">
+    <DataAnnotationsValidator />
+    <div>
+        <label>Enter Name:</label>
+        <BindItem @bind-Value="newPerson!.Names.TrueName"/>
+
+        <label>Enter Birth Year:</label>
+        <InputNumber @bind-Value="newPerson!.BirthYear" />
+
+        <DropDown
+        TItem = "int"
+        Items="@Genders"
+        ItemTextSelector="@(item => {if(item == 0) return "Man";
+                                    else if (item == 1) return "Woman";
+                                    else if (item == 2) return "Nonbinary";
+                                    else return "Gender";}
+                                    )"
+        Placeholder="Choose a Gender"
+        SelectedItem="@newPerson.Gender"
+        SelectedItemChanged="@((value) => newPerson.Gender = value)"
+        OnSelected="OnGenderSelected"
+        /> 
+
+        <DropDown
+        TItem = "Culture"
+        Items="@Cultures"
+        ItemTextSelector="@(item => item.CultureName)"
+        Placeholder="Choose a Culture"
+        SelectedItem="@newPerson!.Culture"
+        SelectedItemChanged="@((value) => newPerson.Culture = value)"
+        OnSelected="OnCultureSelected" 
+        /> 
+    </div>
+</EditForm>
+
+<div>
+    <button @onclick="AddNamedPerson">Add New Person </button> 
+    <button @onclick="AddRandomPerson">Add Person</button>
+</div>
+
+
+
+@if (Persons != null)
+{
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Born</th>
+                    <th>Gender</th>
+                    <th>Culture</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (PersonItem personitem in Persons)
+                {
+                    <tr>
+                        <td>@personitem.Names.TrueName</td>
+                        <td>@personitem.BirthYear</td>
+                        <td>@personitem.GetGenderIdentity()</td>
+                        <td>@personitem.Culture</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>Loading...</p>
+}
+@code {
+    
+
+    [SupplyParameterFromForm]
+    private PersonItem? newPerson {get; set;}
+    private List<Culture> Cultures = new([
+        new(new DefaultTable(), "Voider", malenames: ["VM1", "VM2", "VM3"],femalenames:["VF1", "VF2", "VF3"], 1, 16, true, true, true),
+        new(new DefaultTable(), "Gaian", malenames:["GM1", "GM2", "GM3"],femalenames:["GF1", "GF2", "GF3"], 1, 16, false, false, false),
+        new(new DefaultTable(), "Earther", malenames:["EM1", "EM2", "EM3"],femalenames:["EF1", "EF2", "EF3"], 1, 16, false, false, false)
+        ]);
+    private List<PersonItem> Persons = new();
+    private List<int> Genders = new([0, 1, 2]);
+    void AddRandomPerson()
+    {
+        Culture culture = Cultures[new Random ().Next(Cultures.Count)];
+        Persons.Add(culture.NewRandomPerson(new Random().Next(-10, 10)));
+    }
+    protected override void OnInitialized() => newPerson ??= new();
+    void AddNamedPerson()
+    {
+        if (newPerson != null && newPerson.BirthYear != null && newPerson.Names.TrueName != null && newPerson.Culture != null)
+        {
+            Persons.Add(new PersonItem(newPerson.Names.TrueName, (int)newPerson.BirthYear, newPerson.Gender, newPerson.Gender, newPerson.Culture, 0, 0));
+        }
+        else
+        {
+            Console.WriteLine("Null values found");
+        }
+    } 
+    void OnCultureSelected(Culture value)
+    {
+        if (newPerson != null)
+        {
+            newPerson.Culture = value;
+        }
+    }
+    void OnGenderSelected(int value)
+    {
+        if (newPerson != null)
+        {
+        newPerson.Gender = value;
+        }
+    }
+}
+

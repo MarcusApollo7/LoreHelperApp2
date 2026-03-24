@@ -1,0 +1,51 @@
+@typeparam TItem
+
+<div class="dropdown" tabindex="0" @onblur="CloseDropdown">
+    <button class="btn btn-primary dropdown-toggle" @onclick="ToggleDropdown">
+        @(SelectedItemText ?? Placeholder)
+    </button>
+
+    @if (isOpen)
+    {
+        <ul class="dropdown-menu show">
+            @foreach (var item in Items)
+            {
+                <li>
+                    <button type="button" class="dropdown-item" @onclick="() => SelectItem(item)">
+                        @ItemTextSelector(item)
+                    </button>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter] public List<TItem> Items { get; set; } = new();
+    [Parameter] public Func<TItem, string> ItemTextSelector { get; set; } = default!;
+    [Parameter] public EventCallback<TItem> OnSelected { get; set; }
+    [Parameter] public string Placeholder { get; set; } = "Select...";
+    [Parameter] public TItem? SelectedItem { get; set; }
+    [Parameter] public EventCallback<TItem?> SelectedItemChanged { get; set; }
+
+    private bool isOpen = false;
+    private string? SelectedItemText => SelectedItem != null ? ItemTextSelector(SelectedItem) : null;
+
+    private void ToggleDropdown()
+    {
+        isOpen = !isOpen;
+    }
+
+    private async Task SelectItem(TItem item)
+    {
+        SelectedItem = item;
+        isOpen = false;
+        await SelectedItemChanged.InvokeAsync(item);
+        await OnSelected.InvokeAsync(item);
+    }
+
+    private void CloseDropdown(FocusEventArgs e)
+    {
+        isOpen = false;
+    }
+}

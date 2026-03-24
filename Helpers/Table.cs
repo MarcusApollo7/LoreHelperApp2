@@ -1,6 +1,6 @@
 using MathNet.Numerics.Distributions;
     
-namespace LoreHelperAppBlazor.LoreHelper;
+namespace LoreHelperAppBlazor.Helpers;
 
 
 public interface ITable

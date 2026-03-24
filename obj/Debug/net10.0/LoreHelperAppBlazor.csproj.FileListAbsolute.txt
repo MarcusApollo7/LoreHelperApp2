@@ -83,3 +83,7 @@ c:\Users\ccwar\OneDrive\Documents\unborn_queen_rpg\LoreHelperApp\LoreHelperAppBl
 c:\Users\ccwar\OneDrive\Documents\unborn_queen_rpg\LoreHelperApp\LoreHelperAppBlazor\obj\Debug\net10.0\LoreHelperAppBlazor.pdb
 c:\Users\ccwar\OneDrive\Documents\unborn_queen_rpg\LoreHelperApp\LoreHelperAppBlazor\obj\Debug\net10.0\LoreHelperAppBlazor.genruntimeconfig.cache
 c:\Users\ccwar\OneDrive\Documents\unborn_queen_rpg\LoreHelperApp\LoreHelperAppBlazor\obj\Debug\net10.0\ref\LoreHelperAppBlazor.dll
+C:\Users\ccwar\OneDrive\Documents\unborn_queen_rpg\LoreHelperApp\LoreHelperAppBlazor\bin\Debug\net10.0\MathNet.Numerics.dll
+C:\Users\ccwar\OneDrive\Documents\unborn_queen_rpg\LoreHelperApp\LoreHelperAppBlazor\obj\Debug\net10.0\LoreHelperAppBlazor.csproj.AssemblyReference.cache
+C:\Users\ccwar\OneDrive\Documents\unborn_queen_rpg\LoreHelperApp\LoreHelperAppBlazor\obj\Debug\net10.0\LoreHelperAppBlazor.sourcelink.json
+C:\Users\ccwar\OneDrive\Documents\unborn_queen_rpg\LoreHelperApp\LoreHelperAppBlazor\obj\Debug\net10.0\LoreHelp.8005C916.Up2Date

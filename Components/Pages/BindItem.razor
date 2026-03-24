@@ -1,0 +1,41 @@
+@using System.Linq.Expressions
+@using System.Reflection
+
+@typeparam TValue
+
+<input value="@Value" @oninput="OnInputChanged" />
+
+@code {
+    // Bound value
+    [Parameter] public TValue? Value { get; set; }
+
+    // Event callback for two-way binding
+    [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
+
+    private async Task OnInputChanged(ChangeEventArgs e)
+    {
+        object? rawValue = e.Value;
+
+        // Convert input to TValue
+        TValue? newValue;
+        if (typeof(TValue) == typeof(string))
+        {
+            newValue = (TValue)(object)(rawValue?.ToString() ?? string.Empty);
+        }
+        else
+        {
+            try
+            {
+                newValue = (TValue)Convert.ChangeType(rawValue!, typeof(TValue));
+            }
+            catch
+            {
+                // Invalid conversion — ignore
+                return;
+            }
+        }
+
+        Value = newValue;
+        await ValueChanged.InvokeAsync(newValue);
+    }
+}
