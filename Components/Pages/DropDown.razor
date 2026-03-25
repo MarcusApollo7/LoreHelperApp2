@@ -1,7 +1,7 @@
 @typeparam TItem
 
 <div class="dropdown" tabindex="0" @onblur="CloseDropdown">
-    <button class="btn btn-primary dropdown-toggle" @onclick="ToggleDropdown">
+    <button class="btn-dropdown dropdown-toggle" @onclick="ToggleDropdown">
         @(SelectedItemText ?? Placeholder)
     </button>
 
@@ -35,7 +35,6 @@
     {
         isOpen = !isOpen;
     }
-
     private async Task SelectItem(TItem item)
     {
         SelectedItem = item;
@@ -43,7 +42,6 @@
         await SelectedItemChanged.InvokeAsync(item);
         await OnSelected.InvokeAsync(item);
     }
-
     private void CloseDropdown(FocusEventArgs e)
     {
         isOpen = false;

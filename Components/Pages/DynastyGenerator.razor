@@ -1,0 +1,31 @@
+@page "/DynastyGenerator"
+@using LoreHelperAppBlazor.Helpers
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Razor.TagHelpers
+@rendermode InteractiveServer
+
+<h1>Dynasty Generator</h1>
+
+This page is for generating a dynasty and it will produce a family tree down to a specificed number of generations.
+
+
+<button @onclick="GenerateDynasty"> Generate Dyansty </button>
+@if(_dynasty is not null)
+{
+    <FamilyTree dynasty="_dynasty"></FamilyTree>
+}
+
+
+@code{
+    private static Culture american = new(new DefaultTable(), "American", ["John", "Alexander", "Thomas"], ["Jane", "Alexandra", "Tabitha"], 1, 18, true, true, false);
+    private static PersonItem founder = new("Connor", 2000, 0, 2, american, 1, 1);
+    Dynasty? _dynasty;
+    public void GenerateDynasty(){
+        if (_dynasty is null){
+            _dynasty = new(american);
+            _dynasty.AddFounder(founder);
+        }
+        _dynasty.BeFruitful(2);
+    }
+
+}

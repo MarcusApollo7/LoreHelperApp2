@@ -1,17 +1,21 @@
-@page "/Person"
+@page "/PersonManager"
 @using LoreHelperAppBlazor.Helpers
 @using System.ComponentModel.DataAnnotations
 @rendermode InteractiveServer
 
-<EditForm Model="@newPerson" FormName="person">
+<h1>Person Manager</h1>
+
+This is a page for generating people who must have a name, a birth year, a gender, and a culture.
+
+<EditForm Model="@newPerson">
     <DataAnnotationsValidator />
-    <div>
+    <div class="flex-container">
         <label>Enter Name:</label>
         <BindItem @bind-Value="newPerson!.Names.TrueName"/>
 
         <label>Enter Birth Year:</label>
         <InputNumber @bind-Value="newPerson!.BirthYear" />
-
+        
         <DropDown
         TItem = "int"
         Items="@Genders"
@@ -38,7 +42,7 @@
     </div>
 </EditForm>
 
-<div>
+<div class="flex-container">
     <button @onclick="AddNamedPerson">Add New Person </button> 
     <button @onclick="AddRandomPerson">Add Person</button>
 </div>
@@ -76,8 +80,6 @@ else
     <p>Loading...</p>
 }
 @code {
-    
-
     [SupplyParameterFromForm]
     private PersonItem? newPerson {get; set;}
     private List<Culture> Cultures = new([
@@ -85,11 +87,12 @@ else
         new(new DefaultTable(), "Gaian", malenames:["GM1", "GM2", "GM3"],femalenames:["GF1", "GF2", "GF3"], 1, 16, false, false, false),
         new(new DefaultTable(), "Earther", malenames:["EM1", "EM2", "EM3"],femalenames:["EF1", "EF2", "EF3"], 1, 16, false, false, false)
         ]);
-    private List<PersonItem> Persons = new();
+    private List<PersonItem>? Persons;
     private List<int> Genders = new([0, 1, 2]);
     void AddRandomPerson()
     {
         Culture culture = Cultures[new Random ().Next(Cultures.Count)];
+        Persons = Persons ?? new();
         Persons.Add(culture.NewRandomPerson(new Random().Next(-10, 10)));
     }
     protected override void OnInitialized() => newPerson ??= new();
@@ -97,6 +100,7 @@ else
     {
         if (newPerson != null && newPerson.BirthYear != null && newPerson.Names.TrueName != null && newPerson.Culture != null)
         {
+            Persons = Persons ?? new();
             Persons.Add(new PersonItem(newPerson.Names.TrueName, (int)newPerson.BirthYear, newPerson.Gender, newPerson.Gender, newPerson.Culture, 0, 0));
         }
         else

@@ -1,0 +1,44 @@
+@using LoreHelperAppBlazor.Helpers
+
+<div class="person-profile">
+    <img src = "/images/JProfile.jpg"", alt = "The Cutest Dog Ever" width = "20", height = "30" >
+    <div class = "profile-content">
+        <h3>@PersonProfiled.Names.TrueName</h3>
+        <p>@PersonProfiled.BirthYear to @PersonProfiled.DeathYearOutput()</p>
+    </div>
+    @if (partners!.Any() == true)
+    {
+        <div class="spouse-row">
+                @foreach (var partner in partners!)
+                {
+                    <div class="spouse-card">@partner.Names.TrueName</div>
+                }
+            </div>
+    }
+    @if(children!.Any() == true)
+    {        
+        <div class="connector"></div>
+        <div class="children-row">
+            @foreach (var child in children!)
+            {
+                <div class="child-wrapper">
+                    <div class="horizontal-line"></div>
+                    <PersonProfile PersonProfiled="child" />
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+
+@code{
+    [Parameter] public required PersonItem PersonProfiled {get; set;}
+    private List<PersonItem>? children;
+    private List<PersonItem>? partners;
+    protected override void OnInitialized()
+    {
+        children = PersonProfiled.GetChildren();
+        partners = PersonProfiled.GetRelations([RelationshipType.Marriage, RelationshipType.Romantic, RelationshipType.Sexual]);
+    }
+}

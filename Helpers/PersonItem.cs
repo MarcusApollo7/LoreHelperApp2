@@ -15,12 +15,9 @@ public class PersonItem
     Children is a list of Persons which lists the children of the person
     Partners is a list of Persons which lists the Partners of the person
     */
-    [Required(ErrorMessage = "Need culture")]
     public Culture Culture {get; set;}
-    [Required(ErrorMessage = "Need Name")]
     public Name Names {get;}
     private readonly int Sex; // 0 Male, 1 Female, 2 Intersex
-    [Required(ErrorMessage = "Need Gender")]
     public int Gender {get; set;} // 0 Man, 1 Woman, 2 Nonbinary
     public int Orientation; // Kinsey Scale 0 Exclusively Hetro, 6 Exclusively Homosexual
     public int Ace; // 0 Allosexual, 1 Asexual 
@@ -29,6 +26,7 @@ public class PersonItem
     public int? BirthYear;
     public int? DeathYear;
     public Dictionary<PersonItem, List<RelationshipType>> Relations;
+    public string Id {get; init;} = Guid.NewGuid().ToString();
 
     // Constructors
     public PersonItem(string name, int birthyear, int sex, int gender, Culture culture, int trans, int nb)
@@ -59,13 +57,11 @@ public class PersonItem
         Relations = [];
         Orientation = -1;
         Ace = -1;
-        
     }
     // Methods
     public List<PersonItem> GetChildren()
     {
         return GetRelations(RelationshipType.ParentOf);
-        
     }
     public string GetGenderIdentity()
     {
@@ -85,6 +81,18 @@ public class PersonItem
         {
             return "Non-binary";
         }
+    }
+    public string DeathYearOutput()
+    {
+        if (DeathYear == null)
+        {
+            return "???";
+        }
+        else
+        {
+            return DeathYear.ToString()!;
+        }
+
     }
     public void PrintInfo()
     {
@@ -114,9 +122,8 @@ public class PersonItem
             else // If person does not die
             {
                 List<PersonItem> Partners = GetRelations([RelationshipType.Marriage, RelationshipType.Sexual]);
-                if (current_age == Culture.AgeOfMajority & Partners.Count <= Culture.MaxPartners)
+                if (current_age == Culture.AgeOfMajority & Partners.Count < Culture.MaxPartners)
                 {
-                    Console.WriteLine("Getting Married");
                     GetPartner(current_year, current_age);
                 }
                 if (CanGetPregnant()) // If person can get pregnant try to have child
@@ -147,7 +154,6 @@ public class PersonItem
     {
         if (Sex == 1 & Gender == 1)
         {
-
             return true;
         }
         else
@@ -160,7 +166,6 @@ public class PersonItem
         Bernoulli b = new(Culture.Tables.FBirth[current_age]);
         if (b.Sample() == 1)
         {
-            Console.WriteLine("Child Born");
             PersonItem child = Culture.NewRandomPerson(current_year);
             child.AddRelation(this, RelationshipType.ChildOf);
             AddRelation(child, RelationshipType.ParentOf);

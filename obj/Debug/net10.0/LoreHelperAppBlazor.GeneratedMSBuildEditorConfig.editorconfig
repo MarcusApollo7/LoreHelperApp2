@@ -11,69 +11,81 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = LoreHelperAppBlazor
 build_property.RootNamespace = LoreHelperAppBlazor
-build_property.ProjectDir = C:\Users\ccwar\OneDrive\Documents\unborn_queen_rpg\LoreHelperApp\LoreHelperAppBlazor\
+build_property.ProjectDir = C:\Users\ccwar\OneDrive\Documents\GitHub\LoreHelperApp2\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 9.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\ccwar\OneDrive\Documents\unborn_queen_rpg\LoreHelperApp\LoreHelperAppBlazor
+build_property.MSBuildProjectDirectory = C:\Users\ccwar\OneDrive\Documents\GitHub\LoreHelperApp2
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/ccwar/OneDrive/Documents/unborn_queen_rpg/LoreHelperApp/LoreHelperAppBlazor/Components/App.razor]
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/App.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ccwar/OneDrive/Documents/unborn_queen_rpg/LoreHelperApp/LoreHelperAppBlazor/Components/Pages/BindItem.razor]
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Pages/BindItem.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCaW5kSXRlbS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ccwar/OneDrive/Documents/unborn_queen_rpg/LoreHelperApp/LoreHelperAppBlazor/Components/Pages/Counter.razor]
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Pages/Counter.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb3VudGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ccwar/OneDrive/Documents/unborn_queen_rpg/LoreHelperApp/LoreHelperAppBlazor/Components/Pages/DropDown.razor]
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Pages/DropDown.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEcm9wRG93bi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ccwar/OneDrive/Documents/unborn_queen_rpg/LoreHelperApp/LoreHelperAppBlazor/Components/Pages/Error.razor]
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Pages/DynastyGenerator.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEeW5hc3R5R2VuZXJhdG9yLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Pages/Error.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ccwar/OneDrive/Documents/unborn_queen_rpg/LoreHelperApp/LoreHelperAppBlazor/Components/Pages/Home.razor]
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Pages/FamilyTree.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGYW1pbHlUcmVlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ccwar/OneDrive/Documents/unborn_queen_rpg/LoreHelperApp/LoreHelperAppBlazor/Components/Pages/NotFound.razor]
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Pages/NotFound.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xOb3RGb3VuZC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ccwar/OneDrive/Documents/unborn_queen_rpg/LoreHelperApp/LoreHelperAppBlazor/Components/Pages/Person.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQZXJzb24ucmF6b3I=
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Pages/PersonManager.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQZXJzb25NYW5hZ2VyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ccwar/OneDrive/Documents/unborn_queen_rpg/LoreHelperApp/LoreHelperAppBlazor/Components/Pages/Weather.razor]
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Pages/PersonProfile.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQZXJzb25Qcm9maWxlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Pages/Weather.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xXZWF0aGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ccwar/OneDrive/Documents/unborn_queen_rpg/LoreHelperApp/LoreHelperAppBlazor/Components/Routes.razor]
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Routes.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ccwar/OneDrive/Documents/unborn_queen_rpg/LoreHelperApp/LoreHelperAppBlazor/Components/_Imports.razor]
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ccwar/OneDrive/Documents/unborn_queen_rpg/LoreHelperApp/LoreHelperAppBlazor/Components/Layout/MainLayout.razor]
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-c7usq5z0gc
 
-[C:/Users/ccwar/OneDrive/Documents/unborn_queen_rpg/LoreHelperApp/LoreHelperAppBlazor/Components/Layout/NavMenu.razor]
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Layout/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-8cfvdvbu5i
 
-[C:/Users/ccwar/OneDrive/Documents/unborn_queen_rpg/LoreHelperApp/LoreHelperAppBlazor/Components/Layout/ReconnectModal.razor]
+[C:/Users/ccwar/OneDrive/Documents/GitHub/LoreHelperApp2/Components/Layout/ReconnectModal.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcUmVjb25uZWN0TW9kYWwucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-rd113l584v

@@ -86,11 +86,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ccwar\\OneDrive\\Documents\\unborn_queen_rpg\\LoreHelperApp\\LoreHelperAppBlazor\\LoreHelperAppBlazor.csproj",
+      "projectUniqueName": "C:\\Users\\ccwar\\OneDrive\\Documents\\GitHub\\LoreHelperApp2\\LoreHelperAppBlazor.csproj",
       "projectName": "LoreHelperAppBlazor",
-      "projectPath": "C:\\Users\\ccwar\\OneDrive\\Documents\\unborn_queen_rpg\\LoreHelperApp\\LoreHelperAppBlazor\\LoreHelperAppBlazor.csproj",
+      "projectPath": "C:\\Users\\ccwar\\OneDrive\\Documents\\GitHub\\LoreHelperApp2\\LoreHelperAppBlazor.csproj",
       "packagesPath": "C:\\Users\\ccwar\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ccwar\\OneDrive\\Documents\\unborn_queen_rpg\\LoreHelperApp\\LoreHelperAppBlazor\\obj\\",
+      "outputPath": "C:\\Users\\ccwar\\OneDrive\\Documents\\GitHub\\LoreHelperApp2\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\ccwar\\AppData\\Roaming\\NuGet\\NuGet.Config"

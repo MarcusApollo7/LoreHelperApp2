@@ -7,9 +7,9 @@ namespace LoreHelperAppBlazor.Helpers;
 public class Dynasty : IEnumerable<PersonItem>
 {
     public string House;
-    public PersonItem Founder;
+    public PersonItem? Founder;
     public List<PersonItem> Members;
-    public Culture Culture;
+    public Culture? Culture;
     public Dynasty(string house, PersonItem founder)
     {
         House = house;
@@ -29,6 +29,12 @@ public class Dynasty : IEnumerable<PersonItem>
         }
         Culture = Founder.Culture;
     }
+    public Dynasty(Culture culture)
+    {
+        House = "";
+        Members = [];
+        Culture = culture;
+    }
     public IEnumerator<PersonItem> GetEnumerator()
     {
         return new DynastyEnumerator(this);
@@ -46,14 +52,26 @@ public class Dynasty : IEnumerable<PersonItem>
             foreach (PersonItem person in Members)
             {
                 person.LiveLife();
-                children = (List<PersonItem>)children.Concat(person.GetChildren());
+                children = [.. children, .. person.GetChildren()];
             }
-            Members = (List<PersonItem>)Members.Concat(children);
+            Members = [.. Members, .. children];
         }
     }
     public PersonItem GetPerson(int index)
     {
         return Members[index];
+    }
+    public void AddFounder(PersonItem founder)
+    {
+        if (Founder == null)
+        {
+            Founder = founder;
+            Members.Add(Founder);
+        }
+        else
+        {
+            Console.WriteLine("Attempting to Add Founder when one already exists");
+        }
     }
 }
     
