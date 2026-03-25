@@ -35,14 +35,17 @@ public class Dynasty : IEnumerable<PersonItem>
         Members = [];
         Culture = culture;
     }
+    public int Count()
+    {
+        return Members.Count;
+    }
     public IEnumerator<PersonItem> GetEnumerator()
     {
         return new DynastyEnumerator(this);
     }
     IEnumerator IEnumerable.GetEnumerator()
     {
-        // call the generic version of the method
-        return this.GetEnumerator();
+        return GetEnumerator();
     }
     public void BeFruitful(int generations)
     {

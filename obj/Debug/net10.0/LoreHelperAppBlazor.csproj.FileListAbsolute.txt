@@ -175,4 +175,5 @@ C:\Users\ccwar\OneDrive\Documents\GitHub\LoreHelperApp2\obj\Debug\net10.0\refint
 C:\Users\ccwar\OneDrive\Documents\GitHub\LoreHelperApp2\obj\Debug\net10.0\LoreHelperAppBlazor.pdb
 C:\Users\ccwar\OneDrive\Documents\GitHub\LoreHelperApp2\obj\Debug\net10.0\LoreHelperAppBlazor.genruntimeconfig.cache
 C:\Users\ccwar\OneDrive\Documents\GitHub\LoreHelperApp2\obj\Debug\net10.0\ref\LoreHelperAppBlazor.dll
-C:\Users\ccwar\OneDrive\Documents\GitHub\LoreHelperApp2\obj\Debug\net10.0\compressed\ydy0ntxnhi-{0}-atfigh87zl-atfigh87zl.gz
+C:\Users\ccwar\OneDrive\Documents\GitHub\LoreHelperApp2\obj\Debug\net10.0\compressed\l6thlmabe5-{0}-gjga7wggib-gjga7wggib.gz
+C:\Users\ccwar\OneDrive\Documents\GitHub\LoreHelperApp2\obj\Debug\net10.0\compressed\ydy0ntxnhi-{0}-ezdj0ckege-ezdj0ckege.gz

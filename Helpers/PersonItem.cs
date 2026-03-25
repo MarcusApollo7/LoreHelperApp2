@@ -1,7 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-using MathNet.Numerics.Distributions;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components;
+ using MathNet.Numerics.Distributions;
 
 namespace LoreHelperAppBlazor.Helpers;
 public class PersonItem
@@ -11,9 +8,6 @@ public class PersonItem
     Identity is an Identity which tracks the name, sex, and gender of Person
     BirthYear is an int which notes the year the person was born
     DeathYear is an int which can be null but notes the year the person died
-    Parents is a list of Persons which lists the parents of the person
-    Children is a list of Persons which lists the children of the person
-    Partners is a list of Persons which lists the Partners of the person
     */
     public Culture Culture {get; set;}
     public Name Names {get;}
@@ -190,11 +184,11 @@ public class PersonItem
         Culture PartnerCulture = Culture;
         PersonItem partner = PartnerCulture.FindPartner(this, current_year, current_age);
         RelationshipType relation;
-        if (Culture.Homosexuality == false & this.Gender == partner.Gender)
+        if (Culture.Homosexuality == false & Gender == partner.Gender)
         {
             relation = RelationshipType.Sexual;
         }
-        else if (Culture.Homosexuality == true & this.Gender == partner.Gender)
+        else if (Culture.Homosexuality == true & Gender == partner.Gender)
         {
             relation = RelationshipType.Marriage;
         }

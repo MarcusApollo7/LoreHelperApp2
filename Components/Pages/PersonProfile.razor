@@ -1,8 +1,9 @@
 @using LoreHelperAppBlazor.Helpers
+@inject IJSRuntime JS
 
-<div class="person-profile">
+<div class = "person-wrapper">
     <img src = "/images/JProfile.jpg"", alt = "The Cutest Dog Ever" width = "20", height = "30" >
-    <div class = "profile-content">
+    <div class = "profile-content" @ref = "_nodeRef">
         <h3>@PersonProfiled.Names.TrueName</h3>
         <p>@PersonProfiled.BirthYear to @PersonProfiled.DeathYearOutput()</p>
     </div>
@@ -16,14 +17,13 @@
             </div>
     }
     @if(children!.Any() == true)
-    {        
-        <div class="connector"></div>
+    {
         <div class="children-row">
             @foreach (var child in children!)
             {
                 <div class="child-wrapper">
                     <div class="horizontal-line"></div>
-                    <PersonProfile PersonProfiled="child" />
+                    <PersonProfile PersonProfiled="child" OnNodeMeasured="OnNodeMeasured"/>
                 </div>
             }
         </div>
@@ -34,11 +34,47 @@
 
 @code{
     [Parameter] public required PersonItem PersonProfiled {get; set;}
+    [Parameter] public required EventCallback<NodeMeasurement> OnNodeMeasured {get; set;}
     private List<PersonItem>? children;
     private List<PersonItem>? partners;
+
+    private ElementReference _nodeRef;
+    private DomRect? _lastRect;
     protected override void OnInitialized()
     {
         children = PersonProfiled.GetChildren();
         partners = PersonProfiled.GetRelations([RelationshipType.Marriage, RelationshipType.Romantic, RelationshipType.Sexual]);
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Give Blazor time to finish laying out the DOM
+        await Task.Yield();
+
+        var rect = await JS.InvokeAsync<DomRect>("getBoundingClientRect", _nodeRef);
+
+        // Only send measurement if something actually changed
+        if (_lastRect is null ||
+            rect.Left != _lastRect.Left ||
+            rect.Top != _lastRect.Top ||
+            rect.Width != _lastRect.Width ||
+            rect.Height != _lastRect.Height)
+        {
+            _lastRect = rect;
+
+            var measurement = new NodeMeasurement
+            {
+                Person = PersonProfiled,
+                X = rect.Left,
+                Y = rect.Top,
+                Width = rect.Width,
+                Height = rect.Height
+            };
+
+            await OnNodeMeasured.InvokeAsync(measurement);
+        }
+    }
+
+
+
 }

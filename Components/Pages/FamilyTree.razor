@@ -6,11 +6,21 @@
      @onmouseup="EndPan"
      @onmousemove="Pan">
 
+     <svg class="tree-svg" viewBox="0 0 10000 10000" preserveAspectRatio="xMidYMid meet">
+        @foreach (var link in _links)
+        {
+            <line x1="@link.X1" y1="@link.Y1"
+                  x2="@link.X2" y2="@link.Y2"
+                  stroke="#888" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linecap="round" />
+        }
+    </svg>
+
+
     <div class="tree-content"
         style="transform: translate(@_offsetXpx, @_offsetYpx) scale(@_zoom)">
         @if (dynasty.Founder is not null)
         {
-            <PersonProfile PersonProfiled="dynasty.Founder" />
+            <PersonProfile PersonProfiled="dynasty.Founder" OnNodeMeasured ="OnNodeMeasured"/>
         }
     </div>
 </div>
@@ -25,6 +35,13 @@
     private double _startX, _startY;
     private string _offsetXpx => $"{_offsetX}px";
     private string _offsetYpx => $"{_offsetY}px";
+    private readonly Dictionary<string, DomRect> _nodeRects = new();
+    private readonly List<(double X1, double Y1, double X2, double Y2)> _links = new();
+    private int _expectedNodeCount;
+    protected override void OnParametersSet()
+    {
+        _expectedNodeCount = dynasty.Count();
+    }
     void Zoom(WheelEventArgs e)
     {
         _zoom += e.DeltaY < 0 ? 0.1 : -0.1;
@@ -45,4 +62,58 @@
             _offsetY = e.ClientY - _startY;
         }
     }
+    private void OnNodeMeasured(NodeMeasurement m)
+    {
+        if (!_nodeRects.TryGetValue(m.Person.Id, out var oldRect) ||
+            oldRect.Left != m.X ||
+            oldRect.Top != m.Y ||
+            oldRect.Width != m.Width ||
+            oldRect.Height != m.Height)
+        {
+            _nodeRects[m.Person.Id] = new DomRect
+            {
+                Left = m.X,
+                Top = m.Y,
+                Width = m.Width,
+                Height = m.Height
+            };
+        }
+
+        // Only rebuild when ALL nodes have reported
+        if (_nodeRects.Count == _expectedNodeCount)
+        {
+            RebuildLinks();
+        }
+    }
+
+
+    private void RebuildLinks()
+    {
+        _links.Clear();
+
+        foreach (var person in dynasty)
+        {
+            if (!_nodeRects.TryGetValue(person.Id, out var parentRect))
+                continue;
+
+            var parentCenterX = parentRect.Left + parentRect.Width / 2;
+            var parentBottomY = parentRect.Top + parentRect.Height;
+
+            foreach (var child in person.GetChildren())
+            {
+                string childId = child.Id;
+                if (!_nodeRects.TryGetValue(childId, out var childRect))
+                    continue;
+
+                var childCenterX = childRect.Left + childRect.Width / 2;
+                var childTopY = childRect.Top;
+
+                _links.Add((parentCenterX, parentBottomY, childCenterX, childTopY));
+            }
+        }
+        
+        StateHasChanged();
+    }
+
+
 }
