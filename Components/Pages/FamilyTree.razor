@@ -1,4 +1,5 @@
 @using LoreHelperAppBlazor.Helpers
+@inject IJSRuntime JS
 
 <div class="tree-container"
      @onwheel="Zoom"
@@ -6,28 +7,39 @@
      @onmouseup="EndPan"
      @onmousemove="Pan">
 
-     <svg class="tree-svg" viewBox="0 0 10000 10000" preserveAspectRatio="xMidYMid meet">
-        @foreach (var link in _links)
-        {
-            <line x1="@link.X1" y1="@link.Y1"
-                  x2="@link.X2" y2="@link.Y2"
-                  stroke="#888" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linecap="round" />
-        }
-    </svg>
 
 
-    <div class="tree-content"
-        style="transform: translate(@_offsetXpx, @_offsetYpx) scale(@_zoom)">
-        @if (dynasty.Founder is not null)
-        {
-            <PersonProfile PersonProfiled="dynasty.Founder" OnNodeMeasured ="OnNodeMeasured"/>
-        }
-    </div>
+    <div class = "tree-viewport">
+        <svg class="tree-svg">
+            <g transform="translate(@_offsetX, @_offsetY) scale(@_zoom)">
+                @foreach (var link in _links)
+                {
+                    <line x1="@link.X1" y1="@link.Y1"
+                        x2="@link.X2" y2="@link.Y2"
+                        stroke="#000" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linecap="round" />
+                }
+            </g>    
+        </svg>
+        <div class="tree-content">
+            @if (dynasty.Founder is not null)
+            {
+                <div 
+                class="node-layer" 
+                @ref="_nodeLayerRef"
+                style="transform: translate(@_offsetXpx, @_offsetYpx) scale(@_zoom)">
+                    <PersonProfile PersonProfiled="dynasty.Founder" OnNodeMeasured ="OnNodeMeasured"/>
+                </div>
+            }
+        </div>
+    </div>    
 </div>
 
 
 @code{
     [Parameter] public required Dynasty dynasty {get; set;}
+    private ElementReference _nodeLayerRef;
+    private double _baseLeft;
+    private double _baseTop;
     private double _zoom = 1.0;
     private double _offsetX = 0;
     private double _offsetY = 0;
@@ -38,9 +50,14 @@
     private readonly Dictionary<string, DomRect> _nodeRects = new();
     private readonly List<(double X1, double Y1, double X2, double Y2)> _links = new();
     private int _expectedNodeCount;
-    protected override void OnParametersSet()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _expectedNodeCount = dynasty.Count();
+        if (firstRender)
+        {
+            var rect = await JS.InvokeAsync<DomRect>("getBoundingClientRect", _nodeLayerRef);
+            _baseLeft = rect.Left;
+            _baseTop  = rect.Top;
+        }
     }
     void Zoom(WheelEventArgs e)
     {
@@ -64,29 +81,32 @@
     }
     private void OnNodeMeasured(NodeMeasurement m)
     {
-        if (!_nodeRects.TryGetValue(m.Person.Id, out var oldRect) ||
-            oldRect.Left != m.X ||
-            oldRect.Top != m.Y ||
-            oldRect.Width != m.Width ||
-            oldRect.Height != m.Height)
-        {
-            _nodeRects[m.Person.Id] = new DomRect
-            {
-                Left = m.X,
-                Top = m.Y,
-                Width = m.Width,
-                Height = m.Height
-            };
-        }
+        // m.X, m.Y are screen coords AFTER translate/scale on .node-layer
+        // Invert the transform to get stable local coordinates
+        double localX = (m.X - _baseLeft - _offsetX) / _zoom;
+        double localY = (m.Y - _baseTop - _offsetY) / _zoom;
 
-        // Only rebuild when ALL nodes have reported
-        if (_nodeRects.Count == _expectedNodeCount)
+        var normalizedRect = new DomRect
         {
+            Left = localX,
+            Top = localY,
+            Width = m.Width / _zoom,
+            Height = m.Height / _zoom
+        };
+
+        bool changed =
+            !_nodeRects.TryGetValue(m.Person.Id, out var oldRect) ||
+            oldRect.Left != normalizedRect.Left ||
+            oldRect.Top != normalizedRect.Top ||
+            oldRect.Width != normalizedRect.Width ||
+            oldRect.Height != normalizedRect.Height;
+
+        if (changed)
+        {
+            _nodeRects[m.Person.Id] = normalizedRect;
             RebuildLinks();
         }
     }
-
-
     private void RebuildLinks()
     {
         _links.Clear();
@@ -112,7 +132,6 @@
             }
         }
         
-        StateHasChanged();
     }
 
 

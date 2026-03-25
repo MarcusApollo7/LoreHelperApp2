@@ -138,7 +138,6 @@ public class PersonComparer: IComparer<PersonItem>
         else
         {
             return 0;
-        }
-        
+        }  
     }
 }

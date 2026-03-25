@@ -58,10 +58,6 @@ h1:focus {
         content: "An error has occurred."
     }
 
-.darker-border-checkbox.form-check-input {
-    border-color: #929292;
-}
-
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
     color: var(--bs-secondary-color);
     text-align: end;
@@ -99,6 +95,8 @@ h1:focus {
     max-width: 280px;
     text-align: center;
     font-size: 0.9rem;
+    position: relative;
+    z-index: 1;
 }
 
 .spouse-row {
@@ -125,13 +123,6 @@ h1:focus {
     position: relative;
 }
 
-.horizontal-line {
-    height: 2px;
-    width: 100%;
-    background-color: #999;
-    margin-bottom: 0.25rem;
-}
-
 .tree-container {
     width: 100%;
     height: 90vh;
@@ -149,6 +140,7 @@ h1:focus {
 
 .tree-content {
     transform-origin: 0 0;
+    display: inline-block;
     transition: transform 0.05s linear;
     position: relative;
     z-index: 0;
@@ -161,31 +153,16 @@ h1:focus {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 10;
+    z-index: 0;
     overflow: visible;
     display: block;
+    border: 2px solid red;
 }
 
 .tree-svg line {
     stroke-linecap: round;
     stroke-linejoin: round;
     fill: none;
-}
-
-.profile-svg {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
-    z-index: 10;
-    overflow: visible;
-    display: block;
-}
-
-.profile-svg line {
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    fill: none;
 }
