@@ -2,20 +2,23 @@
 @inject IJSRuntime JS
 
 <div class = "person-wrapper">
-    <img src = "/images/JProfile.jpg"", alt = "The Cutest Dog Ever" width = "20", height = "30" >
-    <div class = "profile-content" @ref = "_nodeRef">
-        <h3>@PersonProfiled.Names.TrueName</h3>
-        <p>@PersonProfiled.BirthYear to @PersonProfiled.DeathYearOutput()</p>
+    <div class = "partner-unit">
+        <img src = "/images/JProfile.jpg"", alt = "The Cutest Dog Ever" width = "20", height = "30" >
+        <div class = "profile-content" @ref = "_nodeRef">
+            <h3>@PersonProfiled.Names.TrueName</h3>
+            <p>@PersonProfiled.BirthYear to @PersonProfiled.DeathYearOutput()</p>
+        </div>
+
+        @if (partners!.Any() == true)
+        {
+            <div class="spouse-row">
+                    @foreach (var partner in partners!)
+                    {
+                        <div class="spouse-card">@partner.Names.TrueName</div>
+                    }
+                </div>
+        }
     </div>
-    @if (partners!.Any() == true)
-    {
-        <div class="spouse-row">
-                @foreach (var partner in partners!)
-                {
-                    <div class="spouse-card">@partner.Names.TrueName</div>
-                }
-            </div>
-    }
     @if(children!.Any() == true)
     {
         <div class="children-row">
@@ -32,10 +35,10 @@
 
 
 @code{
-    [Parameter] public required PersonItem PersonProfiled {get; set;}
+    [Parameter] public required Person PersonProfiled {get; set;}
     [Parameter] public required EventCallback<NodeMeasurement> OnNodeMeasured {get; set;}
-    private List<PersonItem>? children;
-    private List<PersonItem>? partners;
+    private List<Person>? children;
+    private List<Person>? partners;
 
     private ElementReference _nodeRef;
     private DomRect? _lastRect;

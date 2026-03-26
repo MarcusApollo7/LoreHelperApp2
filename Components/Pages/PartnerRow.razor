@@ -1,0 +1,30 @@
+@using LoreHelperAppBlazor.Helpers
+
+<div class="spouse-row">
+    @if (Spouses is not null)
+    {
+        @foreach (var spouse in Spouses)
+        {
+            <MainPersonCard @key="spouse.Id"
+                            Person="spouse"
+                            OnNodeMeasured="OnNodeMeasured"/>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public required Person Person { get; set; }
+    [Parameter] public required EventCallback<NodeMeasurement> OnNodeMeasured { get; set; }
+    [Parameter] public required EventCallback<Person> OnNodeRegistered { get; set; }
+
+    private List<Person>? Spouses;
+
+    protected override void OnParametersSet()
+    {
+        Spouses = Person.GetRelations([
+            RelationshipType.Marriage,
+            RelationshipType.Romantic,
+            RelationshipType.Sexual
+        ]);
+    }
+}

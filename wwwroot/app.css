@@ -156,7 +156,13 @@ h1:focus {
     z-index: 0;
     overflow: visible;
     display: block;
-    border: 2px solid red;
+}
+
+.partner-unit {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
 }
 
 .tree-svg line {

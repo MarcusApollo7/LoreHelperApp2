@@ -68,7 +68,7 @@ public class Culture
             return NeuterNames;
         }
     }
-    public PersonItem NewRandomPerson(int birthyear)
+    public Person NewRandomPerson(int birthyear)
     {
         Categorical SexPicker = new(Tables.SexPicker);
         Bernoulli Trans = new(Tables.TransRate);
@@ -105,7 +105,7 @@ public class Culture
         string givenName = possiblenames[random.Next(possiblenames.Length)];
         return new(givenName, birthyear, sex, gender, this, trans, nb);
     }
-    public PersonItem FindPartner(PersonItem Partner1, int current_year, int current_age)
+    public Person FindPartner(Person Partner1, int current_year, int current_age)
     // Computes a person Partner1 would enter a realtionship with regardless of social norms
     {
         int gender;

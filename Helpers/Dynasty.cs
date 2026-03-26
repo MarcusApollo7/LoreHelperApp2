@@ -4,20 +4,20 @@ using LoreHelperAppBlazor.Components.Pages;
 
 namespace LoreHelperAppBlazor.Helpers;
 
-public class Dynasty : IEnumerable<PersonItem>
+public class Dynasty : IEnumerable<Person>
 {
     public string House;
-    public PersonItem? Founder;
-    public List<PersonItem> Members;
+    public Person? Founder;
+    public List<Person> Members;
     public Culture? Culture;
-    public Dynasty(string house, PersonItem founder)
+    public Dynasty(string house, Person founder)
     {
         House = house;
         Founder = founder;
         Members = [Founder];
         Culture = Founder.Culture;
     }
-    public Dynasty(string house, List<PersonItem> FoundingGeneration)
+    public Dynasty(string house, List<Person> FoundingGeneration)
     {
         House = house;
         FoundingGeneration.Sort();
@@ -39,7 +39,7 @@ public class Dynasty : IEnumerable<PersonItem>
     {
         return Members.Count;
     }
-    public IEnumerator<PersonItem> GetEnumerator()
+    public IEnumerator<Person> GetEnumerator()
     {
         return new DynastyEnumerator(this);
     }
@@ -51,8 +51,8 @@ public class Dynasty : IEnumerable<PersonItem>
     {
         for (int i = 0; i < generations; i++)
         {
-            List<PersonItem> children = [];
-            foreach (PersonItem person in Members)
+            List<Person> children = [];
+            foreach (Person person in Members)
             {
                 person.LiveLife();
                 children = [.. children, .. person.GetChildren()];
@@ -60,11 +60,11 @@ public class Dynasty : IEnumerable<PersonItem>
             Members = [.. Members, .. children];
         }
     }
-    public PersonItem GetPerson(int index)
+    public Person GetPerson(int index)
     {
         return Members[index];
     }
-    public void AddFounder(PersonItem founder)
+    public void AddFounder(Person founder)
     {
         if (Founder == null)
         {
@@ -78,11 +78,11 @@ public class Dynasty : IEnumerable<PersonItem>
     }
 }
     
-public class DynastyEnumerator(Dynasty dynasty) : IEnumerator<PersonItem>
+public class DynastyEnumerator(Dynasty dynasty) : IEnumerator<Person>
 {
     private Dynasty _dynasty = dynasty;
     private int CurrentIndex = -1;
-    private PersonItem CurrentMember = new();
+    private Person CurrentMember = new();
 
     public bool MoveNext()
     {
@@ -105,7 +105,7 @@ public class DynastyEnumerator(Dynasty dynasty) : IEnumerator<PersonItem>
     {
         get { return Current; }
     }
-    public PersonItem Current
+    public Person Current
     {
         get
         {
@@ -120,9 +120,9 @@ public class DynastyEnumerator(Dynasty dynasty) : IEnumerator<PersonItem>
         }
     }
 }
-public class PersonComparer: IComparer<PersonItem>
+public class PersonComparer: IComparer<Person>
 {
-    public int Compare(PersonItem? x, PersonItem? y)
+    public int Compare(Person? x, Person? y)
     {
         if (x == null && y == null) return 0;
         if (x == null) return -1;

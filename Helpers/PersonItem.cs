@@ -1,7 +1,7 @@
  using MathNet.Numerics.Distributions;
 
 namespace LoreHelperAppBlazor.Helpers;
-public class PersonItem
+public class Person
 {
     // Properites
     /* 
@@ -19,11 +19,11 @@ public class PersonItem
     public int NB; // 0 No, 1 Yes
     public int? BirthYear;
     public int? DeathYear;
-    public Dictionary<PersonItem, List<RelationshipType>> Relations;
+    public Dictionary<Person, List<RelationshipType>> Relations;
     public string Id {get; init;} = Guid.NewGuid().ToString();
 
     // Constructors
-    public PersonItem(string name, int birthyear, int sex, int gender, Culture culture, int trans, int nb)
+    public Person(string name, int birthyear, int sex, int gender, Culture culture, int trans, int nb)
     {
         Culture = culture;
         Names = new(name); 
@@ -37,7 +37,7 @@ public class PersonItem
         Orientation = new Random().Next(7);
         Ace = new Bernoulli(.03).Sample();
     }
-    public PersonItem()
+    public Person()
     {
         Culture = new();
         Names = new("");
@@ -53,7 +53,7 @@ public class PersonItem
         Ace = -1;
     }
     // Methods
-    public List<PersonItem> GetChildren()
+    public List<Person> GetChildren()
     {
         return GetRelations(RelationshipType.ParentOf);
     }
@@ -92,7 +92,7 @@ public class PersonItem
     {
         Console.WriteLine($"{Names.TrueName} born: {BirthYear}, orientation: {Orientation}");
         Console.WriteLine("Relations:");
-        foreach (KeyValuePair<PersonItem, List<RelationshipType>> pair in Relations)
+        foreach (KeyValuePair<Person, List<RelationshipType>> pair in Relations)
         {
             foreach(RelationshipType relation in pair.Value)
             {
@@ -115,7 +115,7 @@ public class PersonItem
             }
             else // If person does not die
             {
-                List<PersonItem> Partners = GetRelations([RelationshipType.Marriage, RelationshipType.Sexual]);
+                List<Person> Partners = GetRelations([RelationshipType.Marriage, RelationshipType.Sexual]);
                 if (current_age == Culture.AgeOfMajority & Partners.Count < Culture.MaxPartners)
                 {
                     GetPartner(current_year, current_age);
@@ -124,7 +124,7 @@ public class PersonItem
                 {
                     HaveChild(current_age, current_year);
                 }
-                foreach (PersonItem partner in Partners) // Each partner of the person tries to have a child if able
+                foreach (Person partner in Partners) // Each partner of the person tries to have a child if able
                 {
                     if (partner.CanGetPregnant())
                     {
@@ -160,18 +160,18 @@ public class PersonItem
         Bernoulli b = new(Culture.Tables.FBirth[current_age]);
         if (b.Sample() == 1)
         {
-            PersonItem child = Culture.NewRandomPerson(current_year);
+            Person child = Culture.NewRandomPerson(current_year);
             child.AddRelation(this, RelationshipType.ChildOf);
             AddRelation(child, RelationshipType.ParentOf);
         }
     }
-    public void HaveChild(int current_age, int current_year, PersonItem sire)
+    public void HaveChild(int current_age, int current_year, Person sire)
     {
         Bernoulli b = new(Culture.Tables.FBirth[current_age]);
         if (b.Sample() == 1)
         {
             Console.WriteLine("Child Born");
-            PersonItem child = Culture.NewRandomPerson(current_year);
+            Person child = Culture.NewRandomPerson(current_year);
             child.AddRelation(this, RelationshipType.ChildOf);
             AddRelation(child, RelationshipType.ParentOf);
 
@@ -182,7 +182,7 @@ public class PersonItem
     public void GetPartner(int current_year, int current_age)
     {
         Culture PartnerCulture = Culture;
-        PersonItem partner = PartnerCulture.FindPartner(this, current_year, current_age);
+        Person partner = PartnerCulture.FindPartner(this, current_year, current_age);
         RelationshipType relation;
         if (Culture.Homosexuality == false & Gender == partner.Gender)
         {
@@ -214,7 +214,7 @@ public class PersonItem
             return 2;
         }
     }
-    public void AddRelation(PersonItem person, RelationshipType relation)
+    public void AddRelation(Person person, RelationshipType relation)
     // Used for adding a single relation
     {
         if (Relations.TryGetValue(person, out List<RelationshipType>? value))
@@ -226,7 +226,7 @@ public class PersonItem
             Relations[person] = [relation];
         }
     }
-    public void AddRelation(PersonItem person, List<RelationshipType> relations)
+    public void AddRelation(Person person, List<RelationshipType> relations)
     // Used for adding a set of relations
     {
         if (Relations.TryGetValue(person, out List<RelationshipType>? value))
@@ -238,11 +238,11 @@ public class PersonItem
             Relations[person] = [.. relations];
         }
     }
-    public List<PersonItem> GetRelations(RelationshipType relation)
+    public List<Person> GetRelations(RelationshipType relation)
     // Used for getting all people with a given relation
     {
-        List<PersonItem> output = [];
-        foreach (KeyValuePair<PersonItem, List<RelationshipType>> relationship in Relations)
+        List<Person> output = [];
+        foreach (KeyValuePair<Person, List<RelationshipType>> relationship in Relations)
         {
             if (relationship.Value.Contains(relation)){
                 output.Add(relationship.Key);
@@ -250,11 +250,11 @@ public class PersonItem
         }
         return output;
     }
-    public List<PersonItem> GetRelations(RelationshipType[] relations)
+    public List<Person> GetRelations(RelationshipType[] relations)
     // Used for getting all people with a given set of relations
     {
-        List<PersonItem> output = [];
-        foreach (KeyValuePair<PersonItem, List<RelationshipType>> relationship in Relations)
+        List<Person> output = [];
+        foreach (KeyValuePair<Person, List<RelationshipType>> relationship in Relations)
         {
             foreach (RelationshipType relation in relations)
             {

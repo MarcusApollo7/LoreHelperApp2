@@ -62,13 +62,13 @@ This is a page for generating people who must have a name, a birth year, a gende
                 </tr>
             </thead>
             <tbody>
-                @foreach (PersonItem personitem in Persons)
+                @foreach (Person Person in Persons)
                 {
                     <tr>
-                        <td>@personitem.Names.TrueName</td>
-                        <td>@personitem.BirthYear</td>
-                        <td>@personitem.GetGenderIdentity()</td>
-                        <td>@personitem.Culture</td>
+                        <td>@Person.Names.TrueName</td>
+                        <td>@Person.BirthYear</td>
+                        <td>@Person.GetGenderIdentity()</td>
+                        <td>@Person.Culture</td>
                     </tr>
                 }
             </tbody>
@@ -81,13 +81,13 @@ else
 }
 @code {
     [SupplyParameterFromForm]
-    private PersonItem? newPerson {get; set;}
+    private Person? newPerson {get; set;}
     private List<Culture> Cultures = new([
         new(new DefaultTable(), "Voider", malenames: ["VM1", "VM2", "VM3"],femalenames:["VF1", "VF2", "VF3"], 1, 16, true, true, true),
         new(new DefaultTable(), "Gaian", malenames:["GM1", "GM2", "GM3"],femalenames:["GF1", "GF2", "GF3"], 1, 16, false, false, false),
         new(new DefaultTable(), "Earther", malenames:["EM1", "EM2", "EM3"],femalenames:["EF1", "EF2", "EF3"], 1, 16, false, false, false)
         ]);
-    private List<PersonItem>? Persons;
+    private List<Person>? Persons;
     private List<int> Genders = new([0, 1, 2]);
     void AddRandomPerson()
     {
@@ -101,7 +101,7 @@ else
         if (newPerson != null && newPerson.BirthYear != null && newPerson.Names.TrueName != null && newPerson.Culture != null)
         {
             Persons = Persons ?? new();
-            Persons.Add(new PersonItem(newPerson.Names.TrueName, (int)newPerson.BirthYear, newPerson.Gender, newPerson.Gender, newPerson.Culture, 0, 0));
+            Persons.Add(new Person(newPerson.Names.TrueName, (int)newPerson.BirthYear, newPerson.Gender, newPerson.Gender, newPerson.Culture, 0, 0));
         }
         else
         {

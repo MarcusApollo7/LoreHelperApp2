@@ -1,0 +1,13 @@
+@using LoreHelperAppBlazor.Helpers
+
+
+<img src = "/images/JProfile.jpg"", alt = "The Cutest Dog Ever" width = "20", height = "30" >
+    <div class = "profile-content">
+        <h3>@PersonProfiled.Names.TrueName</h3>
+        <p>@PersonProfiled.BirthYear to @PersonProfiled.DeathYearOutput()</p>
+    </div>
+
+@code{
+    [Parameter] required public Person PersonProfiled {get; set;}
+
+}
