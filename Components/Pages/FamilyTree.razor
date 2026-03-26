@@ -1,90 +1,77 @@
 @using LoreHelperAppBlazor.Helpers
 @inject IJSRuntime JS
 
-<div class="tree-container"
-     @onwheel="Zoom"
-     @onmousedown="StartPan"
-     @onmouseup="EndPan"
-     @onmousemove="Pan">
+<div class="tree-container" @ref="_containerRef">
 
-
-
-    <div class = "tree-viewport">
-        <svg class="tree-svg">
-            <g transform="translate(@_offsetX, @_offsetY) scale(@_zoom)">
-                @foreach (var link in _links)
-                {
-                    <line x1="@link.X1" y1="@link.Y1"
-                        x2="@link.X2" y2="@link.Y2"
-                        stroke="#000" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linecap="round" />
-                }
-            </g>    
+    <div class="tree-viewport">
+        <svg class="tree-svg" preserveAspectRatio="none">
+            <g></g>
         </svg>
+
         <div class="tree-content">
             @if (dynasty.Founder is not null)
             {
-                <div 
-                class="node-layer" 
-                @ref="_nodeLayerRef"
-                style="transform: translate(@_offsetXpx, @_offsetYpx) scale(@_zoom)">
-                    <PersonProfile PersonProfiled="dynasty.Founder" OnNodeMeasured ="OnNodeMeasured"/>
+                <div class="node-layer" @ref="_nodeLayerRef">
+                    <PersonProfile PersonProfiled="dynasty.Founder"
+                                   OnNodeMeasured="OnNodeMeasured" />
                 </div>
             }
         </div>
-    </div>    
+    </div>
 </div>
 
-
 @code{
-    [Parameter] public required Dynasty dynasty {get; set;}
+    [Parameter] public required Dynasty dynasty { get; set; }
+
+    private ElementReference _containerRef;
     private ElementReference _nodeLayerRef;
     private double _baseLeft;
     private double _baseTop;
     private double _zoom = 1.0;
     private double _offsetX = 0;
     private double _offsetY = 0;
-    private bool _panning = false;
-    private double _startX, _startY;
-    private string _offsetXpx => $"{_offsetX}px";
-    private string _offsetYpx => $"{_offsetY}px";
     private readonly Dictionary<string, DomRect> _nodeRects = new();
-    private readonly List<(double X1, double Y1, double X2, double Y2)> _links = new();
-    private int _expectedNodeCount;
+    private readonly List<(double X1, double Y1, double X2, double Y2)> _childlinks = new();
+    private readonly List<(double X1, double Y1, double X2, double Y2)> _partnerLinks = new();
+
+    private string Transform => $"translate({_offsetX},{_offsetY}) scale({_zoom})";
+
+    private int _expectedNodeCount = 0;
+
+    private Task OnNodeRegistered(Person p)
+    {
+        _expectedNodeCount++;
+        return Task.CompletedTask;
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             var rect = await JS.InvokeAsync<DomRect>("getBoundingClientRect", _nodeLayerRef);
             _baseLeft = rect.Left;
-            _baseTop  = rect.Top;
+            _baseTop = rect.Top;
+            System.Diagnostics.Debug.WriteLine($"FirstRender: baseLeft={_baseLeft:F1} baseTop={_baseTop:F1}");
+            
+            await JS.InvokeVoidAsync("initTreePanZoom", _containerRef);
         }
     }
-    void Zoom(WheelEventArgs e)
-    {
-        _zoom += e.DeltaY < 0 ? 0.1 : -0.1;
-        _zoom = Math.Clamp(_zoom, 0.3, 3.0);
-    }
-    void StartPan(MouseEventArgs e)
-    {
-        _panning = true;
-        _startX = e.ClientX - _offsetX;
-        _startY = e.ClientY - _offsetY;
-    }
-    void EndPan(MouseEventArgs e) => _panning = false;
-    void Pan(MouseEventArgs e)
-    {
-        if (_panning)
-        {
-            _offsetX = e.ClientX - _startX;
-            _offsetY = e.ClientY - _startY;
-        }
-    }
+
+    // Pan/zoom now handled entirely in JavaScript via initTreePanZoom() to eliminate jumpiness
+
+
     private void OnNodeMeasured(NodeMeasurement m)
     {
-        // m.X, m.Y are screen coords AFTER translate/scale on .node-layer
-        // Invert the transform to get stable local coordinates
+        // m.X, m.Y are absolute screen coordinates from getBoundingClientRect
+        // Convert back to local coordinates accounting for pan (_offset) and zoom
         double localX = (m.X - _baseLeft - _offsetX) / _zoom;
         double localY = (m.Y - _baseTop - _offsetY) / _zoom;
+
+        System.Diagnostics.Debug.WriteLine($"OnNodeMeasured {m.Person.Names.TrueName}: " +
+            $"screen=({m.X:F1},{m.Y:F1}) " +
+            $"baseLeft={_baseLeft:F1} baseTop={_baseTop:F1} " +
+            $"offsetX={_offsetX:F1} offsetY={_offsetY:F1} zoom={_zoom:F2} " +
+            $"local=({localX:F1},{localY:F1}) size=({m.Width:F1}x{m.Height:F1})");
 
         var normalizedRect = new DomRect
         {
@@ -105,11 +92,18 @@
         {
             _nodeRects[m.Person.Id] = normalizedRect;
             RebuildLinks();
+            // Update SVG lines via JavaScript instead of Blazor re-render
+            // This prevents Blazor from interfering with JavaScript-set transforms
+            _ = JS.InvokeVoidAsync("updateSVGLines", 
+                _childlinks.Select(l => new { x1 = l.X1, y1 = l.Y1, x2 = l.X2, y2 = l.Y2 }).ToList(),
+                _partnerLinks.Select(l => new { x1 = l.X1, y1 = l.Y1, x2 = l.X2, y2 = l.Y2 }).ToList());
         }
     }
+
     private void RebuildLinks()
     {
-        _links.Clear();
+        _childlinks.Clear();
+        _partnerLinks.Clear();
 
         foreach (var person in dynasty)
         {
@@ -128,11 +122,38 @@
                 var childCenterX = childRect.Left + childRect.Width / 2;
                 var childTopY = childRect.Top;
 
-                _links.Add((parentCenterX, parentBottomY, childCenterX, childTopY));
+                _childlinks.Add((parentCenterX, parentBottomY, childCenterX, childTopY));
+                System.Diagnostics.Debug.WriteLine($"ChildLink {person.Names.TrueName}->{child.Names.TrueName}: " +
+                    $"({parentCenterX:F1},{parentBottomY:F1}) -> ({childCenterX:F1},{childTopY:F1})");
             }
         }
-        
+
+        foreach (var person in dynasty)
+        {
+            if (!_nodeRects.TryGetValue(person.Id, out var rectA))
+                continue;
+
+            foreach (var partner in person.GetRelations([
+                RelationshipType.Marriage,
+                RelationshipType.Romantic,
+                RelationshipType.Sexual
+            ]))
+            {
+                if (!_nodeRects.TryGetValue(partner.Id, out var rectB))
+                    continue;
+
+                if (string.Compare(person.Id, partner.Id, StringComparison.Ordinal) >= 0)
+                    continue;
+
+                var aCenterY = rectA.Top + rectA.Height / 2;
+                var bCenterY = rectB.Top + rectB.Height / 2;
+
+                var aRightX = rectA.Left + rectA.Width;
+                var bLeftX = rectB.Left;
+
+                _partnerLinks.Add((aRightX, aCenterY, bLeftX, bCenterY));
+            }
+        }
+        System.Diagnostics.Debug.WriteLine($"RebuildLinks: {_childlinks.Count} child links, {_partnerLinks.Count} partner links");
     }
-
-
 }

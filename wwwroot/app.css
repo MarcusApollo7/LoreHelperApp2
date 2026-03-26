@@ -138,12 +138,22 @@ h1:focus {
     cursor: grabbing;
 }
 
-.tree-content {
+.tree-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
     transform-origin: 0 0;
+    will-change: transform;
+}
+
+.tree-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
     display: inline-block;
     transition: transform 0.05s linear;
-    position: relative;
-    z-index: 0;
 }
 
 .tree-svg {

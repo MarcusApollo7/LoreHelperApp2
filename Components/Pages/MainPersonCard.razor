@@ -1,13 +1,46 @@
 @using LoreHelperAppBlazor.Helpers
+@inject IJSRuntime JS
 
-
-<img src = "/images/JProfile.jpg"", alt = "The Cutest Dog Ever" width = "20", height = "30" >
-    <div class = "profile-content">
+<div class="main-person-card" @ref="_cardRef">
+    <img src="/images/JProfile.jpg" alt="The Cutest Dog Ever" width="20" height="30" />
+    <div class="profile-content">
         <h3>@PersonProfiled.Names.TrueName</h3>
         <p>@PersonProfiled.BirthYear to @PersonProfiled.DeathYearOutput()</p>
     </div>
+</div>
 
 @code{
-    [Parameter] required public Person PersonProfiled {get; set;}
+    [Parameter] public required Person PersonProfiled { get; set; }
+    [Parameter] public required EventCallback<NodeMeasurement> OnNodeMeasured { get; set; }
+    [Parameter] public EventCallback<Person> OnNodeRegistered { get; set; }
 
+    private ElementReference _cardRef;
+    private DomRect? _lastRect;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Task.Yield();
+
+        var rect = await JS.InvokeAsync<DomRect>("getBoundingClientRect", _cardRef);
+
+        if (_lastRect is null ||
+            rect.Left != _lastRect.Left ||
+            rect.Top != _lastRect.Top ||
+            rect.Width != _lastRect.Width ||
+            rect.Height != _lastRect.Height)
+        {
+            _lastRect = rect;
+
+            var measurement = new NodeMeasurement
+            {
+                Person = PersonProfiled,
+                X = rect.Left,
+                Y = rect.Top,
+                Width = rect.Width,
+                Height = rect.Height
+            };
+
+            await OnNodeMeasured.InvokeAsync(measurement);
+        }
+    }
 }

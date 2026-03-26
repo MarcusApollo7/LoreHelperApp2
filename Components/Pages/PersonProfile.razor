@@ -1,22 +1,16 @@
 @using LoreHelperAppBlazor.Helpers
 @inject IJSRuntime JS
 
-<div class = "person-wrapper">
-    <div class = "partner-unit">
-        <img src = "/images/JProfile.jpg"", alt = "The Cutest Dog Ever" width = "20", height = "30" >
-        <div class = "profile-content" @ref = "_nodeRef">
-            <h3>@PersonProfiled.Names.TrueName</h3>
-            <p>@PersonProfiled.BirthYear to @PersonProfiled.DeathYearOutput()</p>
-        </div>
-
+<div class="person-wrapper">
+    <div class="partner-unit">
+        <MainPersonCard PersonProfiled="PersonProfiled"
+                        OnNodeMeasured="OnNodeMeasured"
+                        OnNodeRegistered="OnNodeRegistered" />
         @if (partners!.Any() == true)
         {
-            <div class="spouse-row">
-                    @foreach (var partner in partners!)
-                    {
-                        <div class="spouse-card">@partner.Names.TrueName</div>
-                    }
-                </div>
+            <PartnerRow PersonProfiled="PersonProfiled"
+                       OnNodeMeasured="OnNodeMeasured"
+                       OnNodeRegistered="OnNodeRegistered" />
         }
     </div>
     @if(children!.Any() == true)
@@ -24,9 +18,11 @@
         <div class="children-row">
             @foreach (var child in children!)
             {
-                <div class="child-wrapper">
-                    <PersonProfile PersonProfiled="child" OnNodeMeasured="OnNodeMeasured"/>
-                </div>
+                <PersonProfile @key="child.Id"
+                               PersonProfiled="child"
+                               OnNodeMeasured="OnNodeMeasured"
+                               OnNodeRegistered="OnNodeRegistered" />
+
             }
         </div>
     }
@@ -37,46 +33,13 @@
 @code{
     [Parameter] public required Person PersonProfiled {get; set;}
     [Parameter] public required EventCallback<NodeMeasurement> OnNodeMeasured {get; set;}
+    [Parameter] public required EventCallback<Person> OnNodeRegistered {get; set;}
     private List<Person>? children;
     private List<Person>? partners;
-
-    private ElementReference _nodeRef;
-    private DomRect? _lastRect;
+    private Dictionary<string, ElementReference> _spouseRefs = new();
     protected override void OnInitialized()
     {
         children = PersonProfiled.GetChildren();
         partners = PersonProfiled.GetRelations([RelationshipType.Marriage, RelationshipType.Romantic, RelationshipType.Sexual]);
     }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        // Give Blazor time to finish laying out the DOM
-        await Task.Yield();
-
-        var rect = await JS.InvokeAsync<DomRect>("getBoundingClientRect", _nodeRef);
-
-        // Only send measurement if something actually changed
-        if (_lastRect is null ||
-            rect.Left != _lastRect.Left ||
-            rect.Top != _lastRect.Top ||
-            rect.Width != _lastRect.Width ||
-            rect.Height != _lastRect.Height)
-        {
-            _lastRect = rect;
-
-            var measurement = new NodeMeasurement
-            {
-                Person = PersonProfiled,
-                X = rect.Left,
-                Y = rect.Top,
-                Width = rect.Width,
-                Height = rect.Height
-            };
-
-            await OnNodeMeasured.InvokeAsync(measurement);
-        }
-    }
-
-
-
 }
