@@ -22,7 +22,6 @@
 
 @code{
     [Parameter] public required Dynasty dynasty { get; set; }
-
     private ElementReference _containerRef;
     private ElementReference _nodeLayerRef;
     private double _baseLeft;
@@ -35,14 +34,31 @@
     private readonly List<(double X1, double Y1, double X2, double Y2)> _partnerLinks = new();
 
     private string Transform => $"translate({_offsetX},{_offsetY}) scale({_zoom})";
+    private readonly HashSet<string> _seenPartnerPairs = new();
 
     private int _expectedNodeCount = 0;
-
-    private Task OnNodeRegistered(Person p)
+    private int CountNodes(Person p)
     {
-        _expectedNodeCount++;
-        return Task.CompletedTask;
+        int count = 1; // this person
+
+        foreach (var partner in p.GetRelations([
+                RelationshipType.Marriage,
+                RelationshipType.Romantic,
+                RelationshipType.Sexual
+            ]))
+            count++;
+
+        foreach (var child in p.GetChildren())
+            count += CountNodes(child);
+
+        return count;
     }
+    protected override void OnParametersSet()
+    {
+        _nodeRects.Clear();
+        _expectedNodeCount = CountNodes(dynasty.Founder);
+    }
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -51,7 +67,6 @@
             var rect = await JS.InvokeAsync<DomRect>("getBoundingClientRect", _nodeLayerRef);
             _baseLeft = rect.Left;
             _baseTop = rect.Top;
-            System.Diagnostics.Debug.WriteLine($"FirstRender: baseLeft={_baseLeft:F1} baseTop={_baseTop:F1}");
             
             await JS.InvokeVoidAsync("initTreePanZoom", _containerRef);
         }
@@ -66,12 +81,6 @@
         // Convert back to local coordinates accounting for pan (_offset) and zoom
         double localX = (m.X - _baseLeft - _offsetX) / _zoom;
         double localY = (m.Y - _baseTop - _offsetY) / _zoom;
-
-        System.Diagnostics.Debug.WriteLine($"OnNodeMeasured {m.Person.Names.TrueName}: " +
-            $"screen=({m.X:F1},{m.Y:F1}) " +
-            $"baseLeft={_baseLeft:F1} baseTop={_baseTop:F1} " +
-            $"offsetX={_offsetX:F1} offsetY={_offsetY:F1} zoom={_zoom:F2} " +
-            $"local=({localX:F1},{localY:F1}) size=({m.Width:F1}x{m.Height:F1})");
 
         var normalizedRect = new DomRect
         {
@@ -91,12 +100,18 @@
         if (changed)
         {
             _nodeRects[m.Person.Id] = normalizedRect;
-            RebuildLinks();
-            // Update SVG lines via JavaScript instead of Blazor re-render
-            // This prevents Blazor from interfering with JavaScript-set transforms
-            _ = JS.InvokeVoidAsync("updateSVGLines", 
-                _childlinks.Select(l => new { x1 = l.X1, y1 = l.Y1, x2 = l.X2, y2 = l.Y2 }).ToList(),
-                _partnerLinks.Select(l => new { x1 = l.X1, y1 = l.Y1, x2 = l.X2, y2 = l.Y2 }).ToList());
+            if (_nodeRects.Count == _expectedNodeCount)
+            {
+                RebuildLinks();
+                // Update SVG lines via JavaScript instead of Blazor re-render
+                // This prevents Blazor from interfering with JavaScript-set transforms
+                _ = JS.InvokeVoidAsync("updateSVGLines", 
+                    _childlinks.Select(l => new { x1 = l.X1, y1 = l.Y1, x2 = l.X2, y2 = l.Y2 }).ToList(),
+                    _partnerLinks.Select(l => new { x1 = l.X1, y1 = l.Y1, x2 = l.X2, y2 = l.Y2 }).ToList());
+                StateHasChanged();
+            }
+
+            
         }
     }
 
@@ -123,8 +138,6 @@
                 var childTopY = childRect.Top;
 
                 _childlinks.Add((parentCenterX, parentBottomY, childCenterX, childTopY));
-                System.Diagnostics.Debug.WriteLine($"ChildLink {person.Names.TrueName}->{child.Names.TrueName}: " +
-                    $"({parentCenterX:F1},{parentBottomY:F1}) -> ({childCenterX:F1},{childTopY:F1})");
             }
         }
 
@@ -139,11 +152,16 @@
                 RelationshipType.Sexual
             ]))
             {
+                
                 if (!_nodeRects.TryGetValue(partner.Id, out var rectB))
                     continue;
+                            // Build an order‑independent key
+                var key = string.Compare(person.Id, partner.Id, StringComparison.Ordinal) < 0
+                    ? $"{person.Id}|{partner.Id}"
+                    : $"{partner.Id}|{person.Id}";
 
-                if (string.Compare(person.Id, partner.Id, StringComparison.Ordinal) >= 0)
-                    continue;
+                if (!_seenPartnerPairs.Add(key))
+                    continue; // already processed this pair
 
                 var aCenterY = rectA.Top + rectA.Height / 2;
                 var bCenterY = rectB.Top + rectB.Height / 2;
@@ -154,6 +172,5 @@
                 _partnerLinks.Add((aRightX, aCenterY, bLeftX, bCenterY));
             }
         }
-        System.Diagnostics.Debug.WriteLine($"RebuildLinks: {_childlinks.Count} child links, {_partnerLinks.Count} partner links");
     }
 }

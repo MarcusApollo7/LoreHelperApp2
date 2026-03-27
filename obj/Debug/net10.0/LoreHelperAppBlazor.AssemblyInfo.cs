@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LoreHelperAppBlazor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4ab375be295dd89bcac15b6195fcab0bfc22b64a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6ef51e81a7ed8f8108268302bd0d97618e0793df")]
 [assembly: System.Reflection.AssemblyProductAttribute("LoreHelperAppBlazor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LoreHelperAppBlazor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
